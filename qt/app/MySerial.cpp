@@ -33,12 +33,47 @@ void MySerial::close()
     serial_.close();
 }
 
+void MySerial::send(QString str)
+{
+    Pdu pdu;
+    pdu.code = 1;
+    pdu.rf_state_ = 0;
+    memcpy(pdu.dat, str.toStdString().c_str(), str.length() + 1);
+    slipSend((uint8_t *)&pdu, str.length() + 3);
+}
+
 void MySerial::recvData()
 {
     QByteArray dat = serial_.readAll();
     const char*tmp = dat.data();
     for (int i = 0; i < dat.size(); i++)
         parseChar(tmp[i]);
+}
+
+void MySerial::slipSend(uint8_t* dat, uint32_t len)
+{
+    serial_.putChar(SLIP_END);
+    while (len--)
+    {
+        switch (*dat)
+        {
+            case SLIP_END:
+                serial_.putChar(SLIP_ESC);
+                serial_.putChar(SLIP_ESC_END);
+                break;
+
+            case SLIP_ESC:
+                serial_.putChar(SLIP_ESC);
+                serial_.putChar(SLIP_ESC_ESC);
+                break;
+
+            default:
+                serial_.putChar(*dat);
+                break;
+        }
+        dat++;
+    }
+    serial_.putChar(SLIP_END);
 }
 
 void MySerial::parseChar(uint8_t dat)
@@ -91,5 +126,16 @@ void MySerial::parseChar(uint8_t dat)
 void MySerial::recvFrame(uint8_t *buf, uint32_t len)
 {
     Q_UNUSED(len);
-    emit recvChannelData((uint16_t *)buf);
+    Pdu* pdu = (Pdu*) buf;
+
+    switch (pdu->code)
+    {
+        case 0:
+            emit recvChannelData((uint16_t *)pdu->dat);
+            break;
+        case 1:
+            emit recvEchoData((char *)pdu->dat);
+            break;
+    }
+
 }

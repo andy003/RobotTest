@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QMainWindow>
 #include "MySerial.h"
+#include "MyNetwork.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,9 +21,19 @@ public:
 private:
     Ui::MainWindow *ui;
     MySerial* serial_;
+    MyNetwork* network_;
 
 private slots:
-    void recvChannelData(uint16_t* chl);
+    void tcpConnect();
+    void serialRecvChannelData(uint16_t* chl);
+    void nettestClicked();
+    void networkSend();
+    void setNetworkMode(int mode);
+    void networkRecvData(QByteArray dat);
+    void networkClearRecvData();
+    void serialSend();
+    void serialEchoRecv(QString str);
+    void serialClear();
 
 private:
     void serialOpenBtnClick(bool click);

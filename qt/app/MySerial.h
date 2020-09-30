@@ -10,6 +10,13 @@
 #define SLIP_ESC_END 0334 /* ESC ESC_END means END data byte */
 #define SLIP_ESC_ESC 0335 /* ESC ESC_ESC means ESC data byte */
 
+struct Pdu
+{
+    uint8_t code;
+    uint8_t rf_state_;
+    uint8_t dat[200];
+};
+
 class MySerialException : public std::logic_error
 {
 public:
@@ -64,13 +71,17 @@ public:
      */
     void close();
 
+    void send(QString str);
+
 private slots:
     void recvData();
 
 Q_SIGNALS:
+    void recvEchoData(QString string);
     void recvChannelData(uint16_t* chl);
 
 private:
+    void slipSend(uint8_t* dat, uint32_t len);
     void parseChar(uint8_t dat);
     void recvFrame(uint8_t* buf, uint32_t len);
     uint32_t getPacket(void* buf, uint32_t len);
