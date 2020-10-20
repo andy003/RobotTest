@@ -3,6 +3,8 @@
 
 #include <QThread>
 #include <QMainWindow>
+
+#include "MyCan.h"
 #include "MySerial.h"
 #include "MyNetwork.h"
 
@@ -20,6 +22,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    MyCan* can_;
     MySerial* serial_;
     MyNetwork* network_;
 
@@ -34,6 +37,7 @@ private slots:
     void serialSend();
     void serialEchoRecv(QString str);
     void serialClear();
+    void canOpen();
 
 private:
     void serialOpenBtnClick(bool click);

@@ -29,6 +29,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     setNetworkMode(ui->nettest_mode_cbox_->currentIndex());
 
+    can_ = new MyCan(this);
+    for (QString name : can_->getCanDevices())
+    {
+        ui->can_cmb_->addItem(name);
+    }
+
     serial_ = new MySerial(this);
     network_ = new MyNetwork(this);
 
@@ -45,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->serial_send_btn_, &QPushButton::clicked, this, &MainWindow::serialSend);
     connect(serial_, &MySerial::recvEchoData, this, &MainWindow::serialEchoRecv);
     connect(ui->serial_clear_btn_, &QPushButton::clicked, this, &MainWindow::serialClear);
+    connect(ui->can_open_btn_, &QPushButton::clicked, this, &MainWindow::canOpen);
     setFixedSize(this->width(), this->height());
 }
 
@@ -233,6 +240,11 @@ void MainWindow::serialEchoRecv(QString str)
 void MainWindow::serialClear()
 {
     ui->serial_recv_data_text_->clear();
+}
+
+void MainWindow::canOpen()
+{
+    can_->open(4, 0, 0);
 }
 
 void MainWindow::serialOpenBtnClick(bool click)

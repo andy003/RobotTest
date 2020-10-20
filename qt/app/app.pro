@@ -4,6 +4,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 
+LIBS += -LF:\work\code\wang\RobotTest\qt\app -lControlCAN
+
 RC_ICONS += robot.ico
 
 # The following define makes your compiler emit warnings if you use
@@ -18,13 +20,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    MyCan.cpp \
     MyNetwork.cpp \
     MySerial.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
+    ControlCAN.h \
     MainWindow.h \
+    MyCan.h \
     MyNetwork.h \
     MySerial.h
 
